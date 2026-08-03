@@ -6,32 +6,35 @@ import sys
 # Compatibility shim for missing pkgutil functions in Python 3.14+
 import importlib.util
 import os
-import types
-_shim = types.ModuleType('pkgutil')
+import pkgutil
 
-def _find_loader(name):
-    spec = importlib.util.find_spec(name)
-    return spec.loader if spec is not None else None
+if not hasattr(pkgutil, 'find_loader'):
+    def _find_loader(name):
+        spec = importlib.util.find_spec(name)
+        return spec.loader if spec is not None else None
+    pkgutil.find_loader = _find_loader
 
-def _iter_modules(path=None, prefix=""):
-    if path is None:
-        path = sys.path
-    for entry in path:
-        if not os.path.isdir(entry):
-            continue
-        for name in os.listdir(entry):
-            if name.startswith('.'):
+if not hasattr(pkgutil, 'iter_modules'):
+    def _iter_modules(path=None, prefix=""):
+        if path is None:
+            path = sys.path
+        for entry in path:
+            if not os.path.isdir(entry):
                 continue
-            full = os.path.join(entry, name)
-            if os.path.isdir(full) and os.path.isfile(os.path.join(full, '__init__.py')):
-                yield (None, prefix + name, True)
-            elif name.endswith('.py'):
-                mod_name = name[:-3]
-                yield (None, prefix + mod_name, False)
-_shim.find_loader = _find_loader
-_shim.iter_modules = _iter_modules
-_shim.walk_packages = _iter_modules
-sys.modules['pkgutil'] = _shim
+            for name in os.listdir(entry):
+                if name.startswith('.'):
+                    continue
+                full = os.path.join(entry, name)
+                if os.path.isdir(full) and os.path.isfile(os.path.join(full, '__init__.py')):
+                    yield (None, prefix + name, True)
+                elif name.endswith('.py'):
+                    mod_name = name[:-3]
+                    yield (None, prefix + mod_name, False)
+    pkgutil.iter_modules = _iter_modules
+
+if not hasattr(pkgutil, 'walk_packages'):
+    pkgutil.walk_packages = pkgutil.iter_modules
+
 
 
 def main():
