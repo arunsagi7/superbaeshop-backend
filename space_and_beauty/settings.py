@@ -98,6 +98,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# Trust the X-Forwarded-Proto header from the reverse proxy (Railway) to generate HTTPS URLs
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # Application definition
 
 INSTALLED_APPS = [
