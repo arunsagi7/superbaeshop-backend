@@ -15,7 +15,6 @@ django-annoying==0.10.6
 django-cors-headers==3.2.1
 django-environ==0.14.0
 django-filter==2.2.0
-django-jazzmin==3.0.5
 django-suit @ https://github.com/darklow/django-suit/tarball/v2#sha256=336dc47db1955fe7451634a6aacf203887bd98d243e29ceeff7b54213fcf4e5f
 django-summernote==0.8.11.6
 djangorestframework==3.11.0
