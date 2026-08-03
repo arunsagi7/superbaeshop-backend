@@ -1,0 +1,2 @@
+<#> Hi {{ user.first_name }}!
+{{user.affiliates.otp}} is your SpaceAndBeauty verification code

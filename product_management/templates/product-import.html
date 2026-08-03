@@ -1,0 +1,23 @@
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools-items %}
+<li>
+    <a href="import-csv/" class="addlink"><i class="fas fa-upload"></i> Excel Upload</a>
+</li>
+<!-- <li>
+    <a href="pre-upload-product/" class="addlink"><i class="fas fa-plus"></i> Pre-Add Product</a>
+</li> -->
+<!-- <li>
+    <a href="add-product/" class="addlink"><i class="fas fa-plus-circle"></i> Add Product</a>
+</li> -->
+<li>
+    <a href="publish/" class="addlink" onclick="return confirm('Are you sure you want to publish all products?');"><i
+            class="fas fa-check"></i> Publish</a>
+</li>
+<li>
+    <a href="delete-all/" class="addlink" style="background: #dc3545;"
+        onclick="return confirm('Are you sure you want to delete all products? This action cannot be undone.');"><i
+            class="fas fa-trash"></i> Delete All</a>
+</li>
+{{ block.super }}
+{% endblock %}

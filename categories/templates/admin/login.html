@@ -1,0 +1,62 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block bodyclass %}{{ block.super }} login admin-login{% endblock %}
+
+{% block nav-global %}{% endblock %}
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div class="admin-login-shell">
+    <div class="admin-login-panel">
+
+        <div class="admin-login-brand">
+            <img class="admin-brand-logo" src="{% static 'custom_admin/img/logo.svg' %}" alt="Space And Beauty" />
+            <div class="welcome-text">
+                <h2>Welcome Back</h2>
+                <p>Sign in to access<span> Superbae Ecommerce Admin Portal</span>.</p>
+            </div>
+        </div>
+
+        {% if form.errors and not form.non_field_errors %}
+        <p class="errornote">
+            {% if form.errors.items|length == 1 %}
+            {% trans "Please correct the error below." %}
+            {% else %}
+            {% trans "Please correct the errors below." %}
+            {% endif %}
+        </p>
+        {% endif %}
+
+        {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+        <p class="errornote">{{ error }}</p>
+        {% endfor %}
+        {% endif %}
+
+        <form action="{{ app_path }}" method="post" id="login-form">
+            {% csrf_token %}
+            <div class="form-row">
+                {{ form.username.errors }}
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            <div class="form-row">
+                {{ form.password.errors }}
+                {{ form.password.label_tag }}
+                {{ form.password }}
+                <input type="hidden" name="next" value="{{ next }}" />
+            </div>
+            {% url 'admin_password_reset' as password_reset_url %}
+            {% if password_reset_url %}
+            <div class="password-reset-link">
+                <a href="{{ password_reset_url }}">{% trans 'Forgotten your password or username?' %}</a>
+            </div>
+            {% endif %}
+            <div class="submit-row">
+                <input type="submit" value="{% trans 'Log in' %}" />
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

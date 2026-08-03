@@ -1,0 +1,200 @@
+{% load i18n static %}
+
+<head>
+    <link href="{% static 'custom_admin/css/bootstrap.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'custom_admin/css/font.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'custom_admin/css/custom.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'custom_admin/css/form.css' %}" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<header class="header">
+    <div class="container-fluid container-md">
+        <div class="header-height d-flex align-items-center justify-content-center">
+            <div>
+                <a href="/orders_management/orderplaced">
+                    <img class="logo" src="{% static 'custom_admin/img/logo.png' %}" alt="">
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="pt-4 pb-4">
+    <div class="container">
+        <form class="form-row" method="post">
+            <div class="row">
+                <div class="col-lg-7 mb-5">
+                    <h4>Register Profile</h4>
+                    <p></p>
+
+                    <div class="row">
+                        {% csrf_token %}
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">First Name <span class="form-asterix">*</span></label>
+                                <input type="text" class="form-control" name="first_name"
+                                       placeholder="Enter your first name" value="" required>
+                                <ul class="input-messages"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Email <span class="form-asterix">*</span></label><input
+                                    type="email" class="form-control" name="email"
+                                    placeholder="Enter your email" value="" required>
+                                <ul class="input-messages"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Dial code <span class="form-asterix">*</span></label>
+                                <select name="dial_code" class="form-control" required>
+                                    {% for c in country%}
+                                    <option value="{{c.id}}">+{{c.dial_code}} ({{c.title}})</option>
+                                    {% endfor%}
+                                </select>
+                                <ul class="input-messages"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label class="form-label">Phone Number <span class="form-asterix">*</span></label>
+                                <input type="tel" name="username" class="form-control" required
+                                       placeholder="Enter your phone number" value="">
+                                <ul class="input-messages"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Coupon Code </label>
+                                <input type="text" name="coupon_code" class="form-control"
+                                       placeholder="Enter Coupon Code"
+                                       value="">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Payment Type <span class="form-asterix">*</span></label>
+                                <select name="payment_type" class="form-control">
+                                    <option value="Online">Online</option>
+                                    <option value="COD">COD</option>
+                                </select>
+                                <ul class="input-messages"></ul>
+                            </div>
+                        </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Payment Mode <span class="form-asterix">*</span></label>
+                                <select name="pay_mode" class="form-control">
+                                    <option value="">Select Option</option>
+                                    {% for pay_mode in pay_modes %}
+                                    <option value="{{pay_mode.id}}">{{pay_mode.name}}</option>
+                                    {% endfor %}
+                                </select>
+                                <ul class="input-messages"></ul>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-3 pb-2 pt-3 f-500 border-bottom">Delivery Address</div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Door Number <span class="form-asterix">*</span></label>
+                                <input type="text" class="form-control" name="door_no" placeholder="Enter Door Number"
+                                       value="" required>
+                                <ul class="input-messages"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Street Address <span class="form-asterix">*</span></label>
+                                <input type="text" class="form-control" name="street_address"
+                                       placeholder="Enter street address" value="" required>
+                                <ul class="input-messages"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Locality <span class="form-asterix">*</span></label>
+                                <input type="text" class="form-control" name="locality" placeholder="Enter locality"
+                                       value="" required>
+                                <ul class="input-messages"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Landmark </label>
+                                <input type="text" class="form-control" name="landmark" placeholder="Enter landmark"
+                                       value="">
+                                <ul class="input-messages"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">City <span class="form-asterix">*</span></label>
+                                <input type="text" class="form-control" name="city" placeholder="Enter city" value=""
+                                       required>
+                                <ul class="input-messages"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">State <span class="form-asterix">*</span></label>
+                                <input type="text" class="form-control" name="state" placeholder="Enter state"
+                                       value="" required>
+                                <ul class="input-messages"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Country <span class="form-asterix">*</span></label>
+                                <select name="country" class="form-control">
+                                    {% for c in country%}
+                                    <option value="{{c.id}}">{{c.title}}</option>
+                                    {% endfor %}
+                                </select>
+                                <ul class="input-messages"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Zipcode <span class="form-asterix">*</span></label>
+                                <input type="tel" name="postal_code" class="form-control" placeholder="Enter zipcode"
+                                       value="" required>
+                                <ul class="input-messages"></ul>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-black btn-block">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 mb-5">
+                    <h4>Products</h4>
+                    <p></p>
+
+                    {% for product in products %}
+                    <div class="d-flex align-items-center border p-2 mb-3">
+                        <div>
+                            <img width="100px" class="mr-2"
+                                 src="{{product.thumbnail_image.url}}"
+                                 alt=""/>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="f-500">{{product.title}}</div>
+                            <div class="d-flex pt-2">
+                                <input style="height: 30px; width: 100px;" placeholder="Quantity" class="form-control"
+                                       type="number" name="product_{{product.id}}" value="0"/>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+        </form>
+    </div>
+</section>
+</body>

@@ -1,0 +1,1 @@
+Login OTP - {{user.userprofile.otp}} for Space and Beauty

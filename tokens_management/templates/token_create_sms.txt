@@ -1,0 +1,3 @@
+New Token Created - {{token.token_id}}. Kindly allow us to get this issue resolved. On average it takes 24 hours to get a token resolved.
+Thank you.
+Space and Beauty

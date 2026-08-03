@@ -1,0 +1,41 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrahead %}{{ block.super }}
+<style>
+    .csv-form {
+        max-width: 800px;
+        margin: 20px auto;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        background: #417690;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background: #205067;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="csv-form">
+    <h2>Import Products via CSV</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn">Import CSV</button>
+    </form>
+</div>
+{% endblock %}

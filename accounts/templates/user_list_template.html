@@ -1,0 +1,9 @@
+{% extends 'admin/change_list.html' %}
+{% load i18n static %}
+
+{% block object-tools-items %}
+<li>
+    <a href="download-csv/" class="addlink"><i class="fas fa-download"></i> Download CSV</a>
+</li>
+{{ block.super }}
+{% endblock %}

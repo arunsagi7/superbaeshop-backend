@@ -1,0 +1,1 @@
+<#> Hi {{ user.get_full_name|default:"User" }}! {{user.userprofile.otp}} is your SpaceAndBeauty verification code

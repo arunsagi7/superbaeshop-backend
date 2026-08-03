@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Successfully Placed {{order.tracking_client_id}}</title>
+</head>
+<body>
+
+<p>Dear {{order.name}},</p>
+<p>We are heart broken to see you cancelling this order. However as per your request, your order
+    {{order.tracking_client_id |safe}} is
+    cancelled. If you had placed your order via COD, you are good. If you had paid for the order, please allow 3-15 bank
+    days to get your money refund. </p>
+<p>
+    If you have any queries regarding the order / delivery details please contact
+    <br>
+    Email: <a href="mailto:hey@spaceandbeauty.com">hey@spaceandbeauty.com</a>
+</p>
+<p style="text-align: center;">
+    Thank you and have a wonderful day.<br>
+</p>
+
+</body>
+</html>

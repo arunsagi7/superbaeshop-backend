@@ -1,0 +1,28 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Space And Beauty admin') }}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link href="{% static 'custom_admin/css/custom.css' %}" rel="stylesheet" />
+<link href="{% static 'custom_admin/css/admin-polish.css' %}" rel="stylesheet" />
+<link href="{% static 'custom_admin/css/bootstrap.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block branding %}
+<a href="{% url 'admin:index' %}" aria-label="Space And Beauty admin home">
+    <img class="admin-brand-logo" src="{% static 'custom_admin/img/logo.svg' %}" alt="Space And Beauty" />
+</a>
+
+
+{% endblock %}
+
+{% block footer %}{% endblock %}

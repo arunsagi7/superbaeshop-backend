@@ -1,0 +1,347 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}
+<link href="{% static 'custom_admin/css/admin-polish.css' %}" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.css" />
+<style>
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+    }
+
+    .kpi-card {
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 16px;
+    }
+
+    .kpi-card .kpi-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--sab-text-secondary);
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .kpi-card .kpi-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--sab-text);
+        line-height: 1.2;
+    }
+
+    .kpi-card .kpi-sub {
+        font-size: 0.75rem;
+        color: var(--sab-text-secondary);
+        margin-top: 2px;
+    }
+
+    .kpi-card .kpi-sub .text-success {
+        color: var(--sab-success) !important;
+    }
+
+    .kpi-card .kpi-sub .text-danger {
+        color: var(--sab-danger) !important;
+    }
+
+    .revenue-table th {
+        background: var(--sab-bg) !important;
+    }
+</style>
+{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+{% block breadcrumbs %}{% endblock %}
+{% load humanize %}
+{% load site_tags %}
+
+{% block content %}
+{% dashboard request as dashboard %}
+
+{% if dashboard.last_30_days %}
+<script id="chart-data" type="application/json">
+    {
+        "order_count": [{% for item in dashboard.last_30_days %}{{ item.total }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+        "labels": [{% for item in dashboard.last_30_days %}"{{ item.day|date:'d M' }}"{% if not forloop.last %}, {% endif %}{% endfor %}]
+    }
+</script>
+{% endif %}
+
+<div class="admin-quick-nav">
+    <a href="{% url 'my_admin:orders_management_orderplaced_changelist' %}" title="Manage all orders"><i
+            class="fas fa-shopping-cart"></i> Orders</a>
+    <a href="{% url 'my_admin:offers_management_offers_changelist' %}" title="Manage promotional offers"><i
+            class="fas fa-tags"></i> Offers</a>
+    <a href="{% url 'my_admin:affiliate_management_affiliates_changelist' %}" title="Manage affiliate program"><i
+            class="fas fa-users"></i> Affiliate</a>
+    <a href="{% url 'my_admin:accounts_userprofile_changelist' %}" title="Manage user accounts"><i
+            class="fas fa-user-circle"></i> Users</a>
+    <a href="{% url 'my_admin:product_management_publishedproducts_changelist' %}" title="Manage product catalog"><i
+            class="fas fa-box"></i> Products</a>
+    <a href="{% url 'my_admin:blog_management_blog_changelist' %}" title="Manage blog posts"><i class="fas fa-blog"></i>
+        Blog</a>
+    <a href="{% url 'my_admin:cart_management_cart_changelist' %}" title="Manage user carts"><i
+            class="fas fa-shopping-bag"></i> Cart</a>
+    <a href="{% url 'my_admin:categories_categories_changelist' %}" title="Manage product categories"><i
+            class="fas fa-folder"></i> Categories</a>
+
+    <a href="{% url 'my_admin:tokens_management_newtokens_changelist' %}" title="Manage tokens"><i
+            class="fas fa-key"></i> Tokens</a>
+    <a href="{% url 'my_admin:others_newsletters_changelist' %}" title="Other management options"><i
+            class="fas fa-ellipsis-h"></i> Others</a>
+</div>
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <div class="text-muted small">Dashboard / Overview</div>
+        <h4 class="fw-bold mb-0" style="color:var(--sab-text)">Admin Dashboard</h4>
+    </div>
+    <div class="d-none d-md-flex gap-2">
+        <a href="/orders_management/orderplaced/orders-report/" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-download"></i> Order Report
+        </a>
+        <button class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-download"></i> Transaction Report
+        </button>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+        <div class="kpi-card card">
+            <div class="kpi-label"><i class="fas fa-calendar-day me-1"></i> Today</div>
+            <div class="kpi-value">{{ dashboard.today_order|default:0 }}</div>
+            <div class="kpi-sub">
+                <span class="{% if dashboard.today_order_per >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    {% if dashboard.today_order_per >= 0 %}<i class="fas fa-arrow-up"></i>{% else %}<i
+                        class="fas fa-arrow-down"></i>{% endif %}
+                    {{ dashboard.today_order_per|floatformat:1 }}%
+                </span> vs yesterday &middot; {{ dashboard.today_order_qty|default:0 }} qty
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="kpi-card card">
+            <div class="kpi-label"><i class="fas fa-calendar-day me-1"></i> Yesterday</div>
+            <div class="kpi-value">{{ dashboard.yesterday_order|default:0 }}</div>
+            <div class="kpi-sub">
+                {{ dashboard.yesterday_order_qty|default:0 }} qty
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="kpi-card card">
+            <div class="kpi-label"><i class="fas fa-calendar-week me-1"></i> This Week</div>
+            <div class="kpi-value">{{ dashboard.this_week|default:0 }}</div>
+            <div class="kpi-sub">
+                <span class="{% if dashboard.this_week_per >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    {% if dashboard.this_week_per >= 0 %}<i class="fas fa-arrow-up"></i>{% else %}<i
+                        class="fas fa-arrow-down"></i>{% endif %}
+                    {{ dashboard.this_week_per|floatformat:1 }}%
+                </span> vs last week &middot; {{ dashboard.this_week_order_qty|default:0 }} qty
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="kpi-card card">
+            <div class="kpi-label"><i class="fas fa-calendar-alt me-1"></i> This Month</div>
+            <div class="kpi-value">{{ dashboard.total_month|default:0 }}</div>
+            <div class="kpi-sub">{{ dashboard.this_month_order_qty|default:0 }} qty</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="kpi-card card">
+            <div class="kpi-label"><i class="fas fa-clock me-1"></i> Last 3 Months</div>
+            <div class="kpi-value">{{ dashboard.last_3_month_order|default:0 }}</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="kpi-card card">
+            <div class="kpi-label"><i class="fas fa-clock me-1"></i> Last 6 Months</div>
+            <div class="kpi-value">{{ dashboard.last_6_month_order|default:0 }}</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="kpi-card card">
+            <div class="kpi-label"><i class="fas fa-calendar-check me-1"></i> This Year</div>
+            <div class="kpi-value">{{ dashboard.this_year|default:0 }}</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="kpi-card card">
+            <div class="kpi-label"><i class="fas fa-globe me-1"></i> Overall</div>
+            <div class="kpi-value">{{ dashboard.overall_order|default:0 }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 class="fw-bold mb-0" style="color:var(--sab-text)">Product Orders</h5>
+            <div>
+                <div class="input-group input-group-sm" style="max-width:240px">
+                    <span class="input-group-text bg-white"><i class="fas fa-calendar"></i></span>
+                    <input type="text" name="product_daterange" id="product_daterange"
+                        class="form-control form-control-sm" placeholder="Select range" />
+                </div>
+                <form id="date_filter" method="get">
+                    <input type="hidden" name="start_date" id="start_date" />
+                    <input type="hidden" name="end_date" id="end_date" />
+                </form>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-dashboard table-sm mb-0">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        {% for product in dashboard.products_obj %}
+                        <th class="text-end">{{ product.title }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for products_table in dashboard.products_table %}
+                    <tr>
+                        <td class="fw-semibold">{{ products_table.name }}</td>
+                        {% for product_qty in products_table.product %}
+                        <td class="text-end">{{ product_qty|default:0|floatformat:"0"|intcomma }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-4">
+    <div class="col-12 col-lg-6">
+        <div class="card mb-4 h-100">
+            <div class="card-body p-3" style="max-height: 355px; overflow: scroll; scrollbar-width: none;">
+                <h5 class="fw-bold mb-3" style="color:var(--sab-text)">Revenue by Country</h5>
+                <div class="table-responsive">
+                    <table class="table table-dashboard table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th>Country</th>
+                                <th class="text-end">Today</th>
+                                <th class="text-end">Yesterday</th>
+                                <th class="text-end">This Week</th>
+                                <th class="text-end">This Month</th>
+                                <th class="text-end">Last 3 Months</th>
+                                <th class="text-end">Overall</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for t in dashboard.transaction %}
+                            <tr>
+                                <td class="fw-semibold">{{ t.name }}</td>
+                                <td class="text-end">{{ t.today_revenue|default:0|floatformat:"2"|intcomma }} </td>
+                                <td class="text-end">{{ t.yesterday_revenue|default:0|floatformat:"2"|intcomma }} </td>
+                                <td class="text-end">{{ t.this_week_revenue|default:0|floatformat:"2"|intcomma }} </td>
+                                <td class="text-end">{{ t.total_month_revenue|default:0|floatformat:"2"|intcomma }}
+                                </td>
+                                <td class="text-end">{{ t.last_3_month_revenue|default:0|floatformat:"2"|intcomma }}
+                                </td>
+                                <td class="text-end">{{ t.overall_revenue|default:0|floatformat:"2"|intcomma }} </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <div class="card mb-4 h-100">
+            <div class="card-body p-3">
+                <h5 class="fw-bold mb-3" style="color:var(--sab-text)">Last 30 Days Orders</h5>
+                <div class="chart-container">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    django.jQuery(document).ready(function ($) {
+        var dateRangePicker = $('#product_daterange');
+        if (dateRangePicker.length) {
+            dateRangePicker.daterangepicker({
+                opens: 'left',
+                startDate: moment().startOf('month'),
+                endDate: moment().endOf('month'),
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                locale: { format: 'MMM D, YYYY' }
+            }, function (start, end, label) {
+                $('#start_date').val(start.format('YYYY-MM-DD'));
+                $('#end_date').val(end.format('YYYY-MM-DD'));
+                $('#date_filter').submit();
+            });
+
+            var startDate = dateRangePicker.data('daterangepicker').startDate;
+            var endDate = dateRangePicker.data('daterangepicker').endDate;
+            $('#start_date').val(startDate.format('YYYY-MM-DD'));
+            $('#end_date').val(endDate.format('YYYY-MM-DD'));
+        }
+
+        var chartData = JSON.parse(document.getElementById('chart-data').textContent);
+        var order_count = chartData.order_count;
+        var labels = chartData.labels;
+
+        var ctx = document.getElementById('myChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Orders',
+                    data: order_count,
+                    fill: true,
+                    backgroundColor: 'rgba(209, 78, 154, 0.08)',
+                    borderColor: '#d14e9a',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#d14e9a',
+                    pointRadius: 3,
+                    pointHoverRadius: 6,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0 },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% block sidebar %}{{ block.super }}{% endblock %}

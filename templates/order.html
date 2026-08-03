@@ -1,0 +1,149 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrahead %}{{ block.super }}
+<style>
+    .order-form {
+        max-width: 800px;
+        margin: 20px auto;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 15px;
+    }
+
+    .form-row .form-group {
+        flex: 1;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        background: #417690;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background: #205067;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="order-form">
+    <h2>Import Order via CSV</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="first_name">First Name:</label>
+                <input type="text" id="first_name" name="first_name" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="dial_code">Dial Code:</label>
+                <select id="dial_code" name="dial_code">
+                    {% for c in country %}
+                    <option value="{{ c.id }}">{{ c.title }} (+{{ c.dial_code }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="door_no">Door No:</label>
+                <input type="text" id="door_no" name="door_no" required>
+            </div>
+            <div class="form-group">
+                <label for="street_address">Street Address:</label>
+                <input type="text" id="street_address" name="street_address" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" required>
+            </div>
+            <div class="form-group">
+                <label for="state">State:</label>
+                <input type="text" id="state" name="state" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="locality">Locality:</label>
+                <input type="text" id="locality" name="locality" required>
+            </div>
+            <div class="form-group">
+                <label for="landmark">Landmark:</label>
+                <input type="text" id="landmark" name="landmark">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="postal_code">Postal Code:</label>
+                <input type="text" id="postal_code" name="postal_code" required>
+            </div>
+            <div class="form-group">
+                <label for="country">Country:</label>
+                <select id="country" name="country">
+                    {% for c in country %}
+                    <option value="{{ c.id }}">{{ c.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="product_1">Product 1 Qty:</label>
+                <input type="number" id="product_1" name="product_1" min="0" value="0">
+            </div>
+            <div class="form-group">
+                <label for="product_2">Product 2 Qty:</label>
+                <input type="number" id="product_2" name="product_2" min="0" value="0">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="product_3">Product 3 Qty:</label>
+                <input type="number" id="product_3" name="product_3" min="0" value="0">
+            </div>
+            <div class="form-group">
+                <label for="product_4">Product 4 Qty:</label>
+                <input type="number" id="product_4" name="product_4" min="0" value="0">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="pay_mode">Payment Mode:</label>
+                <select id="pay_mode" name="pay_mode">
+                    {% for pm in pay_modes %}
+                    <option value="{{ pm.id }}">{{ pm }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="coupon_code">Coupon Code:</label>
+                <input type="text" id="coupon_code" name="coupon_code">
+            </div>
+        </div>
+        <button type="submit" class="btn">Create Order</button>
+    </form>
+</div>
+{% endblock %}

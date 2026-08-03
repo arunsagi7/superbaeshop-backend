@@ -1,0 +1,624 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+:root {
+    --sab-primary: #ec4899;
+    --sab-primary-dark: #be185d;
+    --sab-primary-light: #fce7f3;
+}
+
+/* Remove ALL underlines in admin panel */
+a, a:link, a:visited, a:hover, a:focus, a:active,
+#content a, #content a:link, #content a:visited,
+.admin-quick-nav a, .admin-quick-nav a:link, .admin-quick-nav a:visited,
+#nav-sidebar a, .object-tools a, .action-links a,
+.breadcrumbs a, .btn, .btn-add, .button,
+.back-link, .btn-cancel {
+    text-decoration: none !important;
+}
+
+body {
+    background: #f8fafc;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+.page-header {
+    margin-bottom: 24px;
+}
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.page-header h1 i {
+    color: var(--sab-primary);
+}
+.page-header .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #64748b;
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+}
+.page-header .back-link:hover {
+    color: var(--sab-primary);
+}
+.form-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+.form-card h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 16px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--sab-primary-light);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.form-card h2 i {
+    color: var(--sab-primary);
+}
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+.form-group label .required {
+    color: #ef4444;
+}
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--sab-primary);
+    box-shadow: 0 0 0 3px var(--sab-primary-light);
+}
+.form-group .help-text {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--sab-primary);
+}
+.dropzone {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #f8fafc;
+    position: relative;
+}
+.dropzone:hover, .dropzone.dragover {
+    border-color: var(--sab-primary);
+    background: var(--sab-primary-light);
+}
+.dropzone i {
+    font-size: 2.5rem;
+    color: #94a3b8;
+    margin-bottom: 12px;
+}
+.dropzone.dragover i {
+    color: var(--sab-primary);
+}
+.dropzone p {
+    color: #64748b;
+    margin: 4px 0;
+    font-size: 0.9rem;
+}
+.dropzone .file-name {
+    display: none;
+    font-weight: 600;
+    color: var(--sab-primary);
+    margin-top: 8px;
+}
+.dropzone.has-file {
+    border-color: var(--sab-primary);
+    border-style: solid;
+    background: var(--sab-primary-light);
+}
+.dropzone.has-file .file-name {
+    display: block;
+}
+.dropzone.has-file i {
+    color: var(--sab-primary);
+}
+.dropzone video {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    margin-top: 12px;
+}
+#video-input {
+    display: none;
+}
+
+/* Product search & list */
+.product-search-box {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.product-search-box input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+.product-search-box input:focus {
+    outline: none;
+    border-color: var(--sab-primary);
+    box-shadow: 0 0 0 3px var(--sab-primary-light);
+}
+.product-search-box button {
+    padding: 10px 16px;
+    background: linear-gradient(135deg, var(--sab-primary) 0%, var(--sab-primary-dark) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.product-search-box button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(236, 72, 153, 0.3);
+}
+.search-results {
+    max-height: 200px;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    display: none;
+    margin-bottom: 16px;
+}
+.search-results.show {
+    display: block;
+}
+.search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid #f1f5f9;
+}
+.search-result-item:hover {
+    background: var(--sab-primary-light);
+}
+.search-result-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    object-fit: cover;
+    background: #f1f5f9;
+}
+.search-result-item .item-title {
+    font-weight: 500;
+    color: #1e293b;
+    font-size: 0.9rem;
+}
+.search-result-item .item-id {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+.selected-products {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.product-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+    position: relative;
+    animation: slideIn 0.2s ease;
+}
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+.product-card .thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 6px;
+    object-fit: cover;
+    background: #e2e8f0;
+    flex-shrink: 0;
+}
+.product-card .info {
+    flex: 1;
+    min-width: 0;
+}
+.product-card .info .p-title {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.product-card .info .p-price {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+.product-card .info .p-price input {
+    width: 80px;
+    padding: 4px 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+.product-card .remove-btn {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 4px;
+    transition: all 0.2s;
+}
+.product-card .remove-btn:hover {
+    transform: scale(1.2);
+}
+.product-card input[type="hidden"] {
+    display: none;
+}
+.product-card .extra-fields {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+}
+.product-card .extra-fields input {
+    padding: 4px 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    width: 100px;
+}
+.submit-row {
+    display: flex;
+    gap: 12px;
+    padding: 20px 0 0;
+    margin-top: 12px;
+    border-top: 1px solid #e2e8f0;
+}
+.submit-row button {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.submit-row .btn-save {
+    background: linear-gradient(135deg, var(--sab-primary) 0%, var(--sab-primary-dark) 100%);
+    color: #fff;
+    box-shadow: 0 4px 6px -1px rgba(236, 72, 153, 0.3);
+}
+.submit-row .btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(236, 72, 153, 0.4);
+}
+.submit-row .btn-cancel {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+.submit-row .btn-cancel:hover {
+    background: #e2e8f0;
+}
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block userlinks %}
+<a href="/password_change/">Change password</a> / <a href="/logout/">Log out</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="/homebanner/" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Homebanner
+    </a>
+    <h1><i class="fas fa-film"></i> {% if banner %}Edit Banner{% else %}Add New Banner{% endif %}</h1>
+</div>
+
+{% if messages %}
+<div class="messagelist">
+    {% for message in messages %}
+    <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+</div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" action="{{ form_url }}">
+    {% csrf_token %}
+
+    <div class="form-card">
+        <h2><i class="fas fa-info-circle"></i> Banner Details</h2>
+        
+        <div class="form-group">
+            <label>Title <span class="required">*</span></label>
+            <input type="text" name="title" value="{{ banner.title|default:'' }}" placeholder="Enter banner title" required>
+        </div>
+
+        <div class="form-group">
+            <label>Video File <span class="required">*</span></label>
+            <div class="dropzone" id="dropzone" onclick="document.getElementById('video-input').click()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p><strong>Click to upload</strong> or drag and drop</p>
+                <p class="text-muted" style="font-size:0.8rem">MP4 video (max 50MB)</p>
+                <div class="file-name">
+                    <i class="fas fa-check-circle"></i> <span id="file-name-text">
+                        {% if banner.video %}{{ banner.video.name }}{% endif %}
+                    </span>
+                </div>
+                {% if banner.video %}
+                <video controls>
+                    <source src="{{ banner.video.url }}" type="video/mp4">
+                </video>
+                {% endif %}
+            </div>
+            <input type="file" id="video-input" name="video" accept="video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv">
+        </div>
+
+        <div class="form-group">
+            <label>Ordering</label>
+            <input type="number" name="ordering" value="{{ banner.ordering|default:0 }}" min="0" style="width:120px">
+            <div class="help-text">Lower numbers appear first in the carousel</div>
+        </div>
+
+        <div class="form-group">
+            <div class="checkbox-group">
+                <input type="checkbox" name="is_active" id="is_active" {% if banner.is_active or not banner %}checked{% endif %}>
+                <label for="is_active" style="margin:0">Active</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <h2><i class="fas fa-box"></i> Banner Products</h2>
+        
+        <div class="product-search-box">
+            <input type="text" id="product-search-input" placeholder="Search products by name...">
+            <button type="button" onclick="searchProducts()"><i class="fas fa-search"></i></button>
+        </div>
+
+        <div class="search-results" id="search-results"></div>
+
+        <div class="selected-products" id="selected-products">
+            {% for product in products %}
+            <div class="product-card" data-index="{{ forloop.counter0 }}">
+                <div class="thumb" style="display:flex;align-items:center;justify-content:center;background:#f1f5f9;font-size:1.5rem;color:#94a3b8">
+                    {% if product.image %}<img src="{{ product.image }}" style="width:100%;height:100%;object-fit:cover;border-radius:6px">{% else %}<i class="fas fa-box"></i>{% endif %}
+                </div>
+                <input type="hidden" name="product_title[]" value="{{ product.title }}">
+                <input type="hidden" name="product_id[]" value="{{ product.product.id|default:'' }}">
+                <div class="info">
+                    <div class="p-title">{{ product.title }}</div>
+                    <div class="p-price">
+                        Price: <input type="number" step="0.01" name="product_price[]" value="{{ product.price }}" placeholder="Price">
+                        Rating: <input type="number" step="0.1" name="product_rating[]" value="{{ product.rating }}" placeholder="Rating" style="width:60px">
+                        Reviews: <input type="number" name="product_reviews_count[]" value="{{ product.reviews_count }}" style="width:60px">
+                    </div>
+                    <div class="extra-fields">
+                        <input type="text" name="product_badge[]" value="{{ product.badge }}" placeholder="Badge">
+                        <input type="text" name="product_link_text[]" value="{{ product.link_text|default:'Buy Now' }}" placeholder="Link text">
+                        <input type="text" name="product_image[]" value="{{ product.image|default:'' }}" placeholder="Image URL">
+                    </div>
+                </div>
+                <button type="button" class="remove-btn" onclick="this.closest('.product-card').remove()">
+                    <i class="fas fa-times-circle"></i>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <p class="help-text" style="color:#94a3b8;font-size:0.8rem;margin-top:8px">
+            <i class="fas fa-info-circle"></i> Search and select products above to add them to this banner.
+        </p>
+    </div>
+
+    <div class="submit-row">
+        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Banner</button>
+        <a href="/homebanner/" class="btn-cancel" style="display:inline-flex;align-items:center;gap:6px;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;">Cancel</a>
+    </div>
+</form>
+
+<script>
+// Drag and drop video upload
+const dropzone = document.getElementById('dropzone');
+const videoInput = document.getElementById('video-input');
+
+dropzone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    this.classList.add('dragover');
+});
+
+dropzone.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    this.classList.remove('dragover');
+});
+
+dropzone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.classList.remove('dragover');
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        videoInput.files = files;
+        handleVideoFile(files[0]);
+    }
+});
+
+videoInput.addEventListener('change', function() {
+    if (this.files.length > 0) {
+        handleVideoFile(this.files[0]);
+    }
+});
+
+function handleVideoFile(file) {
+    const textEl = document.getElementById('file-name-text');
+    textEl.textContent = file.name;
+    dropzone.classList.add('has-file');
+    
+    // Remove existing video element
+    const existingVideo = dropzone.querySelector('video');
+    if (existingVideo) existingVideo.remove();
+    
+    // Show preview
+    const url = URL.createObjectURL(file);
+    const video = document.createElement('video');
+    video.controls = true;
+    video.src = url;
+    dropzone.appendChild(video);
+}
+
+// Product search
+let searchTimeout;
+
+document.getElementById('product-search-input').addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(searchProducts, 300);
+});
+
+document.getElementById('product-search-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        searchProducts();
+    }
+});
+
+function searchProducts() {
+    const q = document.getElementById('product-search-input').value.trim();
+    const resultsDiv = document.getElementById('search-results');
+    
+    if (!q) {
+        resultsDiv.classList.remove('show');
+        return;
+    }
+    
+    fetch('/homebanner/product-search/?q=' + encodeURIComponent(q))
+        .then(r => r.json())
+        .then(data => {
+            resultsDiv.innerHTML = '';
+            if (data.products.length === 0) {
+                resultsDiv.innerHTML = '<div class="search-result-item" style="color:#94a3b8;justify-content:center">No products found</div>';
+            } else {
+                data.products.forEach(p => {
+                    const div = document.createElement('div');
+                    div.className = 'search-result-item';
+                    div.innerHTML = `
+                        <img src="${p.image || '/static/custom_admin/img/no-image.png'}" alt="">
+                        <div>
+                            <div class="item-title">${p.title}</div>
+                            <div class="item-id">ID: ${p.id}</div>
+                        </div>
+                    `;
+                    div.onclick = function() { addProduct(p); };
+                    resultsDiv.appendChild(div);
+                });
+            }
+            resultsDiv.classList.add('show');
+        });
+}
+
+let productIndex = {{ products|length }};
+
+function addProduct(p) {
+    // Check if already added
+    const existing = document.querySelectorAll('input[name="product_id[]"]');
+    for (let input of existing) {
+        if (input.value === String(p.id)) return;
+    }
+    
+    const container = document.getElementById('selected-products');
+    const div = document.createElement('div');
+    div.className = 'product-card';
+    div.dataset.index = productIndex;
+    div.innerHTML = `
+        <div class="thumb" style="display:flex;align-items:center;justify-content:center;background:#f1f5f9;font-size:1.5rem;color:#94a3b8">${p.image ? '<img src="' + p.image + '" style="width:100%;height:100%;object-fit:cover;border-radius:6px">' : '<i class="fas fa-box"></i>'}</div>
+        <div class="info">
+            <div class="p-title">${p.title}</div>
+            <div class="p-price">
+                Price: <input type="number" step="0.01" name="product_price[]" value="" placeholder="Price">
+                Rating: <input type="number" step="0.1" name="product_rating[]" value="4.5" placeholder="Rating" style="width:60px">
+                Reviews: <input type="number" name="product_reviews_count[]" value="0" style="width:60px">
+            </div>
+            <div class="extra-fields">
+                <input type="text" name="product_badge[]" value="" placeholder="Badge">
+                <input type="text" name="product_link_text[]" value="Buy Now" placeholder="Link text">
+                <input type="text" name="product_image[]" value="${p.image || ''}" placeholder="Image URL">
+            </div>
+        </div>
+        <input type="hidden" name="product_title[]" value="${p.title}">
+        <input type="hidden" name="product_id[]" value="${p.id}">
+        <button type="button" class="remove-btn" onclick="this.closest('.product-card').remove()">
+            <i class="fas fa-times-circle"></i>
+        </button>
+    `;
+    container.appendChild(div);
+    productIndex++;
+    
+    document.getElementById('search-results').classList.remove('show');
+    document.getElementById('product-search-input').value = '';
+}
+
+// Close search results on click outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.product-search-box') && !e.target.closest('#search-results')) {
+        document.getElementById('search-results').classList.remove('show');
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,2 @@
+New Token Created - {{token.token_id}}.
+Kindly allow us to get this issue resolved.

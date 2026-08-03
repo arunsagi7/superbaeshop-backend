@@ -1,0 +1,3 @@
+Token Resolved - {{token.token_id}}. We have resolved your token successfully. Have a beautiful day.
+Thank you.
+Space and Beauty.

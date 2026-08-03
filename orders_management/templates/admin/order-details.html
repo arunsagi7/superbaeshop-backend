@@ -1,0 +1,389 @@
+{% extends 'admin/change_form.html' %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+
+<style>
+    .card {
+    box-shadow: 0 0.375rem 0.75rem rgb(140 152 164 / 8%);
+}
+.card-header::after{
+    content: none;
+}
+
+
+
+
+</style>
+{% endblock %}
+{% block field_sets %}
+<div class="">
+    {% csrf_token %}
+    <fieldset class="suit-form module aligned ">
+        <div class="row">
+            <div class="col-lg-4 mb-3 mb-lg-0">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-header-title">Order Details (#{{object.tracking_client_id}})</h4>
+                        <dl class="row mt-5 text-sm-end">
+                            <dt class="col-4">Date Added</dt>
+                            <dd class="col-8">{{object.created_on}}</dd>
+                            <dt class="col-4">Payment Method</dt>
+                            <dd class="col-8">{{object.payment_type}}</dd>
+                            <dt class="col-4">Payment Status</dt>
+                            <dd class="col-8">
+                                {% if object.payment_status %}
+                                <span class="badge bg-soft-success text-success">Paid</span>
+                                {% else %}
+                                <span class="badge bg-soft-danger text-danger">Not-Paid</span>
+                                {%endif%}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-3 mb-lg-0">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-header-title">Shipping Address</h4>
+                        <div class="mt-4">
+                            <h5 class="d-block">{{object.name}}</h5>
+                            <h6 class="text-primary">{{object.phone}}, {{object.email}}</h6>
+                            <span class="d-block text-body">
+                                {{object.address.door_no}}, {{object.address.street_address}}, <br>
+                                    {{object.address.city}}, {{object.address.state}}, <br>
+                                {{object.address.country.title}} - {{object.address.postal_code}}
+                                 <br>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-3 mb-lg-0">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-header-title">Status Update</h4>
+                        <dl class="row mt-5 text-sm-end">
+                            <dt class="col-4">Order Status</dt>
+                            <dd class="col-8">{{object.status}}</dd>
+                            <dt class="col-4">Delivery ID</dt>
+                            <dd class="col-8">{{object.awb_code|default:"-"}}</dd>
+                            <dt class="col-4">Delivery Link</dt>
+                            <dd class="col-8">
+                                {% if object.track_url %}
+                                <a href="{{object.track_url}}" class="link" target="_blank">Open</a>
+                                {% else %}
+                                -
+                                {%endif%}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8 mb-3 mb-lg-0">
+                <div id="displayCard" class="card mb-3 mb-lg-5">
+                    <div class="card-header card-header-content-between">
+                        <h4 class="card-header-title">Order details <span
+                                class="badge bg-soft-dark text-dark rounded-circle ms-1">{{object.order_items.count}}</span>
+                        </h4>
+                        {% if object.is_amount_refunded != 1 and object.status.order_status.id in '1,2' %}
+                        <a class="link text-danger" href="javascript:onEditCard();">Edit</a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+
+                        {% for item in object.order_items.all %}
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <div class="avatar avatar-xl">
+                                    <img class="img-fluid" src="{{item.product.thumbnail_image.url}}"
+                                         alt="Image Description">
+                                </div>
+                            </div>
+
+                            <div class="flex-grow-1 ms-3">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3 mb-md-0">
+                                        <a class="h5 d-block" target="_blank"
+                                           href="/product_management/allproductsproducts/{{item.product.id}}/change/">{{item.product.title}}</a>
+
+                                        <div class="fs-6 text-body">
+                                            <span>SKU:</span>
+                                            <span class="fw-semi-bold">{{item.product_sku}}</span>
+                                        </div>
+                                        <div class="fs-6 text-body">
+                                            <span>Category:</span>
+                                            <span class="fw-semi-bold">{{item.product.category}}</span>
+                                        </div>
+                                        <div class="fs-6 text-body">
+                                            <span>Weight:</span>
+                                            <span class="fw-semi-bold">{{item.product.weight}} kgs</span>
+                                        </div>
+                                    </div>
+                                    <!-- End Col -->
+
+                                    <div class="col col-md-2 align-self-center">
+                                        <h5>{{item.currency.currency_type}}{{item.unit_price|floatformat:"0"}}</h5>
+                                    </div>
+                                    <!-- End Col -->
+
+                                    <div class="col col-md-2 align-self-center">
+                                        <h5>{{item.quantity}}</h5>
+                                    </div>
+
+                                    <div class="col col-md-2 align-self-center text-end">
+                                        <h5>{{item.currency.currency_type}}{{item.pay_amount}}</h5>
+                                    </div>
+                                    <!-- End Col -->
+                                </div>
+                                <!-- End Row -->
+                            </div>
+                        </div>
+                        <!-- End Media -->
+                        <hr>
+                        {% endfor%}
+
+                        <div class="row justify-content-md-end mb-3">
+                            <div class="col-md-5 col-lg-5">
+                                <dl class="row text-sm-end">
+                                    <dt class="col-sm-6">Subtotal:</dt>
+                                    <dd class="col-sm-6">{{object.currency_type}}{{object.sub_total_amount}}</dd>
+                                    {%if object.shipping_charge > 0.0 %}
+                                    <dt class="col-sm-6">Shipping fee:</dt>
+                                    <dd class="col-sm-6">{{object.currency_type}}{{object.shipping_charge}}</dd>
+                                    {% endif %}
+                                    {%if object.cod_charge > 0.0 %}
+                                    <dt class="col-sm-6">COD Charge:</dt>
+                                    <dd class="col-sm-6">{{object.currency_type}}{{object.cod_charge}}</dd>
+                                    {% endif %}
+                                    {% if object.is_wallet %}
+                                    <dt class="col-sm-6">Wallet Discount Amount:</dt>
+                                    <dd class="col-sm-6">{{object.currency_type}}{{object.cod_charge}}</dd>
+                                    {% else %}
+
+                                    {%if object.coupon_amount > 0.0 %}
+                                    <dt class="col-sm-6">Offer Amount:</dt>
+                                    <dd class="col-sm-6">{{object.currency_type}}{{object.coupon_amount}}</dd>
+                                    {% endif %}
+                                    {% endif%}
+                                    <dt class="col-sm-6">Tax:</dt>
+                                    <dd class="col-sm-6">{{object.currency_type}}{{object.total_gst}}</dd>
+                                    <dt class="col-sm-6">Total:</dt>
+                                    <dd class="col-sm-6">{{object.currency_type}}{{object.pay_amount}}</dd>
+                                    {% if object.is_amount_refunded != None %}
+                                    <dt class="col-sm-6">Refund Amount:
+                                        {% if object.is_amount_refunded %}
+                                        <small class="text-success"><br>Amount yet Refunded</small>
+                                        {%else%}
+                                        <small class="text-danger"><br>Amount yet not Refunded</small>
+                                        {%endif%}
+                                    </dt>
+                                    <dd class="col-sm-6 text-danger">{{object.currency_type}}{{object.refund_amount}}
+                                    </dd>
+                                    {%endif%}
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div id="" class="card mb-3 mb-lg-5">
+                    <div class="card-header card-header-content-between">
+                        <h4 class="card-header-title">Order Cancelled Items Details<span
+                                class="badge bg-soft-dark text-dark rounded-circle ms-1">{{object.order_items_cancelled.count}}</span>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+
+                        {% for item in object.order_items_cancelled.all %}
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <div class="avatar avatar-xl">
+                                    <img class="img-fluid" src="{{item.product.thumbnail_image.url}}"
+                                         alt="Image Description">
+                                </div>
+                            </div>
+
+                            <div class="flex-grow-1 ms-3">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3 mb-md-0">
+                                        <a class="h5 d-block" target="_blank"
+                                           href="/product_management/allproductsproducts/{{item.product.id}}/change/">{{item.product.title}}</a>
+
+                                        <div class="fs-6 text-body">
+                                            <span>SKU:</span>
+                                            <span class="fw-semi-bold">{{item.product_sku}}</span>
+                                        </div>
+                                        <div class="fs-6 text-body">
+                                            <span>Category:</span>
+                                            <span class="fw-semi-bold">{{item.product.category}}</span>
+                                        </div>
+                                        <div class="fs-6 text-body">
+                                            <span>Weight:</span>
+                                            <span class="fw-semi-bold">{{item.product.weight}} kgs</span>
+                                        </div>
+                                    </div>
+                                    <!-- End Col -->
+
+                                    <div class="col col-md-2 align-self-center">
+                                        <h5>{{item.currency.currency_type}}{{item.unit_price|floatformat:"0"}}</h5>
+                                    </div>
+                                    <!-- End Col -->
+
+                                    <div class="col col-md-2 align-self-center">
+                                        <h5>{{item.quantity}}</h5>
+                                    </div>
+
+                                    <div class="col col-md-2 align-self-center text-end">
+                                        <h5>{{item.currency.currency_type}}{{item.pay_amount}}</h5>
+                                    </div>
+                                    <!-- End Col -->
+                                </div>
+                                <!-- End Row -->
+                            </div>
+                        </div>
+                        <!-- End Media -->
+                        <hr>
+                        {% endfor%}
+
+                    </div>
+
+
+                </div>
+                <div id="editCard" class="card mb-3 mb-lg-5 d-none">
+                    <div class="card-header card-header-content-between">
+                        <h4 class="card-header-title">Order details</h4>
+                        <a class="link text-danger" href="javascript:onEditCard();">Close</a>
+                    </div>
+                    <div class="card-body">
+                        {% for item in object.order_items.all %}
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <div class="avatar avatar-xl">
+                                    <img class="img-fluid" src="{{item.product.thumbnail_image.url}}"
+                                         alt="Image Description">
+                                </div>
+                            </div>
+
+                            <div class="flex-grow-1 ms-3">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3 mb-md-0">
+                                        <a class="h5 d-block" target="_blank"
+                                           href="/product_management/allproductsproducts/{{item.product.id}}/change/">{{item.product.title}}</a>
+
+                                        <div class="fs-6 text-body">
+                                            <span>SKU:</span>
+                                            <span class="fw-semi-bold">{{item.product_sku}}</span>
+                                        </div>
+                                        <div class="fs-6 text-body">
+                                            <span>Category:</span>
+                                            <span class="fw-semi-bold">{{item.product.category}}</span>
+                                        </div>
+                                        <div class="fs-6 text-body">
+                                            <span>Weight:</span>
+                                            <span class="fw-semi-bold">{{item.product.weight}} kgs</span>
+                                        </div>
+                                    </div>
+                                    <!-- End Col -->
+
+                                    <div class="col col-md-2 align-self-center">
+                                        <h5>{{item.currency.currency_type}}{{item.unit_price|floatformat:"0"}}</h5>
+                                    </div>
+                                    <!-- End Col -->
+
+                                    <div class="col col-md-2 align-self-center">
+                                        <h5>{{item.quantity}}</h5>
+                                    </div>
+
+                                    <div class="col col-md-4 align-self-center text-end">
+                                        <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                            <button type="button" onclick="onItemDelete(this, {{item.id}})"
+                                                    class="btn btn-warning">Delete
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                    <!-- End Col -->
+                                </div>
+                                <!-- End Row -->
+                            </div>
+                        </div>
+                        <hr>
+                        {% endfor%}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-header-title">Customer</h4>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row text-sm-start">
+                            <dt class="col-4">Name</dt>
+                            <dd class="col-8">{{object.user}}</dd>
+                            <dt class="col-4">Email</dt>
+                            <dd class="col-8">{{object.user.user.email}}</dd>
+                            <dt class="col-4">Phone</dt>
+                            <dd class="col-8">{{object.user.user.username}}</dd>
+                            <dt class="col-4">Last Login</dt>
+                            <dd class="col-8">{{object.user.user.last_login}}</dd>
+                            <dt class="col-4">Total Orders</dt>
+                            <dd class="col-8">{{object.user.my_orders.count}}</dd>
+                        </dl>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </fieldset>
+</div>
+<script>
+    function onEditCard(){
+        $('#editCard').toggleClass("d-none")
+        $('#displayCard').toggleClass("d-none")
+    }
+    function onItemDelete(el, id){
+        var csrf=$('input[name="csrfmiddlewaretoken"]').val();
+        $('#save').prop('disabled', true)
+        el.disabled = true
+        $.ajax({
+            url: `${id}/delete-item/`,
+            method: "DELETE",
+            beforeSend: function(xhr, settings) {
+                function getCookie(name) {
+                        var cookieValue = null;
+                        if (document.cookie && document.cookie != '') {
+                                var cookies = document.cookie.split(';');
+                                for (var i = 0; i < cookies.length; i++) {
+                                        var cookie = jQuery.trim(cookies[i]);
+                                        // Does this cookie string begin with the name we want?
+                                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                                break;
+                                        }
+                                }
+                        }
+                return cookieValue;
+            }
+             xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            },
+            success: function(data){
+                location.reload();
+            },
+            error: function(errorMsg){
+                alert("error")
+            }
+        });
+    }
+
+
+
+
+</script>
+{%endblock%}

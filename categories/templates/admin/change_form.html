@@ -1,0 +1,8 @@
+{% extends "admin/change_form.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link href="{% static 'custom_admin/css/admin-polish.css' %}" rel="stylesheet"/>
+<link href="{% static 'custom_admin/css/bootstrap.css' %}" rel="stylesheet"/>
+{% endblock %}

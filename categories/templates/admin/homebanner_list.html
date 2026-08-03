@@ -1,0 +1,353 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+    :root {
+        --sab-primary: #ec4899;
+        --sab-primary-dark: #be185d;
+        --sab-primary-light: #fce7f3;
+    }
+
+    /* Remove ALL underlines in admin panel */
+    a,
+    a:link,
+    a:visited,
+    a:hover,
+    a:focus,
+    a:active,
+    #content a,
+    #content a:link,
+    #content a:visited,
+    .admin-quick-nav a,
+    .admin-quick-nav a:link,
+    .admin-quick-nav a:visited,
+    #nav-sidebar a,
+    .object-tools a,
+    .action-links a,
+    .breadcrumbs a,
+    .btn,
+    .btn-add,
+    .button {
+        text-decoration: none !important;
+    }
+
+    body {
+        background: #f8fafc;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .page-header h1 i {
+        color: var(--sab-primary);
+    }
+
+    .btn-add {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: linear-gradient(135deg, var(--sab-primary) 0%, var(--sab-primary-dark) 100%);
+        color: #fff !important;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none !important;
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        cursor: pointer;
+    }
+
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(236, 72, 153, 0.25);
+        color: #fff !important;
+        background: linear-gradient(135deg, var(--sab-primary-dark) 0%, var(--sab-primary) 100%);
+    }
+
+    .table-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+
+    .table-card table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table-card thead th {
+        padding: 14px 16px;
+        color: #fff !important;
+        background: var(--sab-primary);
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        text-align: left;
+        border-bottom: none;
+    }
+
+    .table-card tbody tr {
+        border-bottom: 1px solid #e2e8f0;
+        transition: background 0.2s;
+    }
+
+    .table-card tbody tr:hover {
+        background: var(--sab-primary-light);
+    }
+
+    .table-card tbody td {
+        padding: 12px 16px;
+        font-size: 0.9rem;
+        color: #1e293b;
+        vertical-align: middle;
+    }
+
+    .video-preview {
+        width: 120px;
+        height: 68px;
+        border-radius: 8px;
+        overflow: hidden;
+        object-fit: cover;
+        background: #f1f5f9;
+    }
+
+    .video-preview video {
+        width: 100%;
+        height: 100%;
+    }
+
+    .badge-pill {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-active {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .badge-inactive {
+        background: #fef2f2;
+        color: #991b1b;
+    }
+
+    .toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .toggle-btn.active {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .toggle-btn.active:hover {
+        background: #bbf7d0;
+    }
+
+    .toggle-btn.inactive {
+        background: #fef2f2;
+        color: #991b1b;
+    }
+
+    .toggle-btn.inactive:hover {
+        background: #fecaca;
+    }
+
+    .action-links {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-links a {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .action-links a.edit {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
+    }
+
+    .action-links a.edit:hover {
+        background: #dbeafe;
+    }
+
+    .action-links a.delete {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+
+    .action-links a.delete:hover {
+        background: #fecaca;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #94a3b8;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 16px;
+        color: #cbd5e1;
+    }
+
+    .empty-state p {
+        font-size: 1rem;
+        margin: 0;
+    }
+</style>
+{% endblock %}
+
+
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-film"></i> Homebanner</h1>
+    <a href="/homebanner/add/" class="btn-add">
+        Add New Banner
+    </a>
+</div>
+
+{% if messages %}
+<div class="messagelist">
+    {% for message in messages %}
+    <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th>Preview</th>
+                <th>Title</th>
+                <th>Ordering</th>
+                <th>Products</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for banner in banners %}
+            <tr>
+                <td>
+                    <div class="video-preview">
+                        <video muted>
+                            <source src="{{ banner.video.url }}" type="video/mp4">
+                        </video>
+                    </div>
+                </td>
+                <td><strong>{{ banner.title }}</strong></td>
+                <td>{{ banner.ordering }}</td>
+                <td>{{ banner.banner_products.count }}</td>
+                <td>
+                    <button class="toggle-btn {% if banner.is_active %}active{% else %}inactive{% endif %}"
+                        onclick="toggleBanner({{ banner.id }})" id="toggle-{{ banner.id }}">
+                        <i class="fas {% if banner.is_active %}fa-toggle-on{% else %}fa-toggle-off{% endif %}"></i>
+                        {% if banner.is_active %}Active{% else %}Inactive{% endif %}
+                    </button>
+                </td>
+                <td>
+                    <div class="action-links">
+                        <a href="/homebanner/{{ banner.id }}/edit/" class="edit">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="#" onclick="deleteBanner({{ banner.id }}, '{{ banner.title|escapejs }}')"
+                            class="delete">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">
+                    <div class="empty-state">
+                        <i class="fas fa-video"></i>
+                        <p>No banners yet. Click "Add New Banner" to create one.</p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<form id="delete-form" method="post" style="display:none;">
+    {% csrf_token %}
+</form>
+
+<script>
+    function toggleBanner(id) {
+        fetch('/homebanner/' + id + '/toggle/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: ''
+        })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    const btn = document.getElementById('toggle-' + id);
+                    btn.className = 'toggle-btn ' + (data.is_active ? 'active' : 'inactive');
+                    btn.innerHTML = '<i class="fas ' + (data.is_active ? 'fa-toggle-on' : 'fa-toggle-off') + '"></i> ' +
+                        (data.is_active ? 'Active' : 'Inactive');
+                }
+            });
+    }
+
+    function deleteBanner(id, title) {
+        if (confirm('Are you sure you want to delete "' + title + '"?')) {
+            const form = document.getElementById('delete-form');
+            form.action = '/homebanner/' + id + '/delete/';
+            form.submit();
+        }
+    }
+</script>
+{% endblock %}

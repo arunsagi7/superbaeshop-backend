@@ -1,0 +1,4 @@
+Hey,
+Your order {{order.tracking_client_id | safe}} is ready for Dispatch, 24-48 hrs.
+Kindly allow an additional 24 hours to get notified regarding the dispatch.
+S&B

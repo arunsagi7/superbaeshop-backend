@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Missing Transaction Testing</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="jumbotron text-center" style="margin-bottom:0">
+  <h1>Missing Transaction Testing</h1>
+  <p>Upload a rezorpay *CSV Document</p>
+</div>
+<div class="container" style="margin-top:30px">
+    <form action="" method="POST" enctype="multipart/form-data" class="form-inline">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="file1">File:</label>
+    <input  accept=".csv"  type="file" id="file1" name="csv_file" required>
+<button class="btn btn-dark" type="submit">Upload</button>
+        </div>
+
+    </form>
+{% if mismatch_transaction %}
+    <div class="mt-5">
+        <h2 class="mb-5">Mismatch Transactions</h2>
+        <table class="table">
+    <thead>
+      <tr>
+        <th>Order Id</th>
+        <th>Customer Info</th>
+        <th>Address</th>
+        <th>Payment Type</th>
+        <th>Payment Status</th>
+          <th>Created On</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for order in mismatch_transaction %}
+      <tr>
+        <td>{{order.tracking_client_id}}</td>
+        <td>{{order.name}} <br> {{order.email}}<br>{{order.phone}}</td>
+        <td>{{order.address.door_no}}, {{order.address.street_address}}<br>
+                                                {{order.address.locality}}, {{order.address.city}},
+                                                {{order.address.state}}<br>
+                                                {{order.address.country}} - {{order.address.postal_code}}</td>
+          <td>{{order.payment_type}}</td>
+          <td>{{order.is_success}}</td>
+          <td>{{order.created_on |date:'Y-m-d H:i' }}</td>
+      </tr>
+    {% endfor %}
+
+    </tbody>
+  </table>
+    </div>
+    {%endif%}
+</div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls %}
+
+{% block content %}
+  <div class="csv-import-container">
+    <h2>Import Users from CSV</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="Import" class="default" />
+    </form>
+  </div>
+{% endblock %}

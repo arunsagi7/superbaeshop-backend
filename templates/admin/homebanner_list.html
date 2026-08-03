@@ -1,0 +1,38 @@
+{% extends "admin/change_list.html" %}
+{% load i18n static %}
+
+{% block extrahead %}{{ block.super }}
+<style>
+    .hero-video-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .hero-video-table th {
+        background: #417690;
+        color: #fff;
+        padding: 8px 12px;
+        text-align: left;
+        font-size: 12px;
+    }
+
+    .hero-video-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid #eee;
+        font-size: 13px;
+    }
+
+    .video-preview {
+        width: 120px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-video-table">
+    {{ block.super }}
+</div>
+{% endblock %}
