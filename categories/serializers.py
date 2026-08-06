@@ -136,10 +136,11 @@ class HomepageSectionProductSerializer(serializers.ModelSerializer):
     product_id = serializers.SerializerMethodField()
     country_prices = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
+    hover_image = serializers.SerializerMethodField()
 
     class Meta:
         model = models.HomepageSectionProduct
-        fields = ("id", "product_id", "title", "subtitle", "image", "price", "original_price", "link_url",
+        fields = ("id", "product_id", "title", "subtitle", "image", "hover_image", "price", "original_price", "link_url",
                   "link_text", "rating", "reviews_count", "badge", "ordering", "is_active", "country_prices")
 
     def get_product_id(self, obj):
@@ -190,6 +191,23 @@ class HomepageSectionProductSerializer(serializers.ModelSerializer):
                 pass
         if product and product.thumbnail_image:
             image_url = product.thumbnail_image.url
+            request = self.context.get('request', None)
+            if request and not image_url.startswith('http'):
+                return request.build_absolute_uri(image_url)
+            return image_url
+        return None
+
+    def get_hover_image(self, obj):
+        product = obj.product
+        if not product:
+            from product_management.models import Products
+            try:
+                product = Products.objects.filter(
+                    title__icontains=obj.title).first()
+            except Exception:
+                pass
+        if product and hasattr(product, 'hover_image') and product.hover_image:
+            image_url = product.hover_image.url
             request = self.context.get('request', None)
             if request and not image_url.startswith('http'):
                 return request.build_absolute_uri(image_url)
