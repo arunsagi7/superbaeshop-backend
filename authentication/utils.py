@@ -71,7 +71,7 @@ class SendOneTimePassword(object):
     def send_message(mobiles, message, mobile_number, template_id):
         # Resend.com email OTP delivery (using the provided API key)
         # The OTP is sent as an email; mobile_number is interpreted as the recipient email.
-        api_key = "REDACTED"
+        api_key = os.getenv("RESEND_API_KEY")
         url = "https://api.resend.com/emails"
         headers = {
             "Authorization": f"Bearer {api_key}",
