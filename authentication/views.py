@@ -32,7 +32,8 @@ class SignUpView(generics.GenericAPIView, utils.ActionViewMixin, utils.SendOneTi
         user = self.validate_user(serializer)
 
         if not hasattr(user, "userprofile"):
-            raise exceptions.ValidationError({"non_field_errors": [constants.ALREADY_MEMBER_SPACEANDBEAUTY]})
+            raise exceptions.ValidationError(
+                {"non_field_errors": [constants.ALREADY_MEMBER_SPACEANDBEAUTY]})
 
         self.sms_context = {"user": user, "otp": user.userprofile.otp}
         now = datetime.datetime.now()
@@ -45,10 +46,12 @@ class SignUpView(generics.GenericAPIView, utils.ActionViewMixin, utils.SendOneTi
 
         user.userprofile.save()
 
-        Thread(target=self.send_verification_otp, args=(user,), kwargs={"template_id": "1307162572077585049"}).start()
+        Thread(target=self.send_verification_otp, args=(user,),
+               kwargs={"template_id": "1307162572077585049"}).start()
 
         kwargs = self.get_send_email_kwargs(user)
-        Thread(target=self.send_email, args=(kwargs['to_email'], kwargs['context'],)).start()
+        Thread(target=self.send_email, args=(
+            kwargs['to_email'], kwargs['context'],)).start()
 
         data = {"user": user.id,
                 "data": "An OTP has been sent to {} and +{}-{}".format(user.email,
@@ -64,9 +67,11 @@ class SignUpView(generics.GenericAPIView, utils.ActionViewMixin, utils.SendOneTi
 
     def validate_user(self, serializer):
         try:
-            user = models.User.objects.get(username=serializer.data["username"])
+            user = models.User.objects.get(
+                username=serializer.data["username"])
             if user and user.is_active:
-                raise exceptions.ValidationError({"username": [constants.USERNAME_ALREADY_EXISTS]})
+                raise exceptions.ValidationError(
+                    {"username": [constants.USERNAME_ALREADY_EXISTS]})
             else:
                 user.email = serializer.data['email']
                 user.save()
@@ -75,12 +80,15 @@ class SignUpView(generics.GenericAPIView, utils.ActionViewMixin, utils.SendOneTi
                 user.userprofile.save()
         except ObjectDoesNotExist:
             if models.User.objects.filter(email=serializer.data['email']):
-                raise exceptions.ValidationError({"email": [constants.EMAIL_ALREADY_EXISTS]})
+                raise exceptions.ValidationError(
+                    {"email": [constants.EMAIL_ALREADY_EXISTS]})
 
-            user = models.User.objects.create(username=serializer.data["username"], email=serializer.data['email'])
+            user = models.User.objects.create(
+                username=serializer.data["username"], email=serializer.data['email'])
             country = int_to_country(serializer.data['country'])
             UserProfile.objects.create(user=user, country=country)
-            signals.user_registered.send(sender=self.__class__, user=user, request=self.request)
+            signals.user_registered.send(
+                sender=self.__class__, user=user, request=self.request)
         return user
 
 
@@ -113,9 +121,11 @@ class LoginView(generics.GenericAPIView, utils.ActionViewMixin, utils.SendOneTim
 
         user.userprofile.save()
 
-        Thread(target=self.send_verification_otp, args=(user,), kwargs={"template_id": "1307162572077585049"}).start()
+        Thread(target=self.send_verification_otp, args=(user,),
+               kwargs={"template_id": "1307162572077585049"}).start()
         kwargs = self.get_send_email_kwargs(user)
-        Thread(target=self.send_email, args=(kwargs['to_email'], kwargs['context'],)).start()
+        Thread(target=self.send_email, args=(
+            kwargs['to_email'], kwargs['context'],)).start()
 
         data = {"user": user.id,
                 "data": "An OTP has been sent to {} and +{}-{}".format(user.email,
@@ -129,7 +139,8 @@ class LoginView(generics.GenericAPIView, utils.ActionViewMixin, utils.SendOneTim
             user = models.User.objects.get(
                 Q(username=serializer.data["username"]) | Q(email=serializer.data["username"]))
         except ObjectDoesNotExist:
-            raise exceptions.ValidationError({"non_field_errors": [constants.INVALID_USERNAME]})
+            raise exceptions.ValidationError(
+                {"non_field_errors": [constants.INVALID_USERNAME]})
         return user
 
     def get_email_context(self, user):
@@ -149,13 +160,17 @@ class ObtainAuthenticationView(generics.GenericAPIView, utils.ActionViewMixin):
     def action(self, serializer):
         user = self.get_user(serializer)
         if user.userprofile.otp != int(serializer.data['otp']):
-            raise exceptions.ValidationError({"non_field_errors": [constants.INVALID_OTP_ERROR]})
+            raise exceptions.ValidationError(
+                {"non_field_errors": [constants.INVALID_OTP_ERROR]})
         user.userprofile.otp = None
         user.userprofile.otp_expired = None
         user.userprofile.save()
-        user.userprofile.token = utils.get_or_create_token(user, serializer.data["client"]).key
-        data = UserProfileSerializers(user.userprofile, context={'request': self.request}).data
-        django.contrib.auth.signals.user_logged_in.send(sender=user.__class__, request=self.request, user=user)
+        user.userprofile.token = utils.get_or_create_token(
+            user, serializer.data["client"]).key
+        data = UserProfileSerializers(user.userprofile, context={
+                                      'request': self.request}).data
+        django.contrib.auth.signals.user_logged_in.send(
+            sender=user.__class__, request=self.request, user=user)
         return response.Response(data=data)
 
     @staticmethod
@@ -164,7 +179,8 @@ class ObtainAuthenticationView(generics.GenericAPIView, utils.ActionViewMixin):
             return models.User.objects.get(Q(username=serializer.data["username"]) |
                                            Q(email=serializer.data["username"]))
         except ObjectDoesNotExist:
-            raise exceptions.ValidationError({"non_field_errors": [constants.INVALID_USERNAME]})
+            raise exceptions.ValidationError(
+                {"non_field_errors": [constants.INVALID_USERNAME]})
 
 
 class ResendOTPViews(generics.GenericAPIView, utils.SendOneTimePassword):
@@ -181,7 +197,7 @@ class ResendOTPViews(generics.GenericAPIView, utils.SendOneTimePassword):
 
         if not ("user_id" in request.data and request.data['user_id']):
             raise exceptions.ValidationError({"non_field_errors":
-                                                  [constants.REQUIRED_FIELD_ERROR.format("user_id")]})
+                                              [constants.REQUIRED_FIELD_ERROR.format("user_id")]})
 
         user = utils.int_to_user_object(request.data['user_id'])
         now = datetime.datetime.now()
@@ -197,7 +213,8 @@ class ResendOTPViews(generics.GenericAPIView, utils.SendOneTimePassword):
 
         self.sms_context = {"user": user, "otp": user.userprofile.otp}
 
-        Thread(target=self.send_verification_otp, args=(user,), kwargs={"template_id": "1307162572077585049"}).start()
+        Thread(target=self.send_verification_otp, args=(user,),
+               kwargs={"template_id": "1307162572077585049"}).start()
 
         data = {"user": user.id,
                 "data": "An OTP has been sent to {} and +{}-{}".format(user.email,

@@ -144,7 +144,7 @@ class ProductsAdmin(RelatedFieldAdmin):
         ('Other Info', {
             'classes': ('suit-tab suit-tab-general',),
             'fields': (
-                'thumbnail_image', ("support_number",
+                ('thumbnail_image', 'hover_image'), ("support_number",
                                     "financial_year", "stock_qty"),
                 ("price_category", "is_active"), "status", "is_stock", "is_barter")
         }),

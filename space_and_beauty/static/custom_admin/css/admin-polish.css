@@ -398,6 +398,16 @@ fieldset .vDateField {
   border-collapse: separate;
   border-spacing: 0;
   overflow: hidden;
+  margin-top: 20px;
+  border: 1px solid #e5e7eb;
+}
+
+.field-id {
+  border-bottom: 1px solid #f0f1f3;
+}
+
+.field-image_tag img {
+  border-radius: 15px;
 }
 
 #result_list thead>tr th,

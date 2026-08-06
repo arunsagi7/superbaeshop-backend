@@ -46,6 +46,7 @@ class Products(models.Model):
     sub_category = models.ForeignKey(
         SubCategories, on_delete=models.CASCADE, blank=True, null=True, related_name="sub_categories_product")
     thumbnail_image = models.ImageField(upload_to=upload_to_title_images)
+    hover_image = models.ImageField(upload_to=upload_to_title_images, blank=True, null=True)
     support_number = models.CharField(max_length=15)
     stock_qty = models.PositiveIntegerField()
     tags = models.ManyToManyField(ProductTags, blank=True)

@@ -105,7 +105,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 INSTALLED_APPS = [
     'categories.apps.CategoriesConfig',
-    'django.contrib.admin.apps.AdminConfig',
+    'django.contrib.admin',
     'cart_management.apps.CartManagementConfig',
     'authentication.apps.AuthenticationConfig',
     'product_management.apps.ProductManagementConfig',
