@@ -586,6 +586,8 @@ input[type=button][disabled].default {
     margin-left: 1.5em;
 }
 
+
+
 .module h3 {
     margin-top: .6em;
 }
@@ -1036,11 +1038,11 @@ table#change-history tbody th {
     background: #a41515;
 }
 
+
+
 .delete-confirmation form .cancel-link {
     display: inline-block;
     vertical-align: middle;
-    height: 15px;
-    line-height: 15px;
     background: #ddd;
     border-radius: 4px;
     padding: 10px 15px;

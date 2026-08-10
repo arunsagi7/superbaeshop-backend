@@ -457,8 +457,7 @@ th.sorted:after {
   font-weight: 600 !important;
   font-size: 0.8125rem !important;
   padding: 10px 16px !important;
-  margin: 0 !important;
-  border-radius: 0 !important;
+  margin-bottom: 0 !important;
   box-shadow: none !important;
 }
 
