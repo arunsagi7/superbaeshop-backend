@@ -347,8 +347,6 @@ input[type="submit"].default,
 
 #changelist-search input[type="text"] {
     padding: 0.625rem 1rem;
-
-    border: 2px solid var(--sab-border);
     border-radius: 6px;
     font-size: 0.95rem;
     width: 100%;

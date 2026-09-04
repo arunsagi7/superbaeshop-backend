@@ -120,6 +120,8 @@ class HomepageSection(models.Model):
         ('dream_box_collections', 'Dream Box Collections'),
         ('testimonials', 'Testimonials'),
         ('upgrade_essentials', 'Upgrade Essentials'),
+        ('bestseller', 'Bestseller'),
+        ('promotions_banner', 'Promotions Banner'),
     ]
 
     section_type = models.CharField(max_length=50, choices=SECTION_TYPES)
@@ -127,6 +129,16 @@ class HomepageSection(models.Model):
     subtitle = models.CharField(max_length=255, blank=True, default='')
     description = models.TextField(blank=True, default='')
     image = models.ImageField(upload_to='homepage/', blank=True, null=True)
+    # Promotions Banner images
+    background_image = models.ImageField(
+        upload_to='homepage/promotions/', blank=True, null=True,
+        help_text="Promotions Banner: animated/static background (webp)")
+    profile_image = models.ImageField(
+        upload_to='homepage/promotions/', blank=True, null=True,
+        help_text="Promotions Banner: girl/person image")
+    products_image = models.ImageField(
+        upload_to='homepage/promotions/', blank=True, null=True,
+        help_text="Promotions Banner: floating sticker products image")
     background_color = models.CharField(max_length=50, blank=True, default='')
     link_url = models.CharField(max_length=500, blank=True, default='')
     link_text = models.CharField(
@@ -144,6 +156,36 @@ class HomepageSection(models.Model):
 
     def __str__(self):
         return f'{self.get_section_type_display()} - {self.title or "Untitled"}'
+
+
+class PromotionSlide(models.Model):
+    """Individual slide inside a Promotions Banner section (one section = many slides)."""
+    section = models.ForeignKey(
+        HomepageSection, on_delete=models.CASCADE, related_name='promotion_slides')
+    title = models.CharField(max_length=255, blank=True, default='')
+    subtitle = models.CharField(max_length=255, blank=True, default='')
+    background_image = models.ImageField(
+        upload_to='homepage/promotions/slides/', blank=True, null=True,
+        help_text="Slide background (animated/static webp)")
+    profile_image = models.ImageField(
+        upload_to='homepage/promotions/slides/', blank=True, null=True,
+        help_text="Girl/person image")
+    products_image = models.ImageField(
+        upload_to='homepage/promotions/slides/', blank=True, null=True,
+        help_text="Floating sticker products image")
+    link_url = models.CharField(max_length=500, blank=True, default='')
+    link_text = models.CharField(max_length=100, blank=True, default='Shop Now')
+    ordering = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'tbl_promotion_slides'
+        verbose_name = 'Promotion Slide'
+        verbose_name_plural = 'Promotion Slides'
+        ordering = ['ordering']
+
+    def __str__(self):
+        return self.title or f'Slide {self.pk}'
 
 
 class HomepageSectionProduct(models.Model):

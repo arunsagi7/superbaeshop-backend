@@ -473,7 +473,8 @@ th.sorted:after {
 #changelist-filter ul {
   background: var(--sab-card) !important;
   padding: 8px !important;
-  margin: 0 !important;
+  margin-left: 0px;
+  margin-right: 0px;
   border: 1px solid var(--sab-border) !important;
   border-top: 0 !important;
   border-radius: 0 0 var(--sab-radius-sm) var(--sab-radius-sm) !important;

@@ -159,6 +159,15 @@ class HomepageSectionProductInline(admin.StackedInline):
     verbose_name_plural = "Section Products"
 
 
+class PromotionSlideInline(admin.TabularInline):
+    model = models.PromotionSlide
+    fields = ("title", "subtitle", "background_image", "profile_image",
+              "products_image", "link_url", "link_text", "ordering", "is_active")
+    extra = 1
+    verbose_name = "Promotion Slide"
+    verbose_name_plural = "Promotion Slides (each slide = one banner in the carousel)"
+
+
 @admin.register(models.HomepageSection, site=my_admin_site)
 class HomepageSectionAdmin(admin.ModelAdmin):
     list_display = ("section_type", "title", "ordering", "is_active")
@@ -172,6 +181,10 @@ class HomepageSectionAdmin(admin.ModelAdmin):
         ("Media & Style", {
             "fields": ("image", "background_color")
         }),
+        ("Promotions Banner Images", {
+            "fields": ("background_image", "profile_image", "products_image"),
+            "description": "Used by the Promotions Banner section: background (webp), girl/person, and floating sticker products."
+        }),
         ("Link", {
             "fields": ("link_url", "link_text")
         }),
@@ -179,7 +192,13 @@ class HomepageSectionAdmin(admin.ModelAdmin):
             "fields": ("ordering", "is_active")
         }),
     )
-    inlines = [HomepageSectionProductInline]
+    inlines = [HomepageSectionProductInline, PromotionSlideInline]
+
+    def get_inlines(self, request, obj=None):
+        # Only show the slides inline for Promotions Banner sections
+        if obj and obj.section_type == 'promotions_banner':
+            return [PromotionSlideInline]
+        return [HomepageSectionProductInline]
 
     def has_delete_permission(self, request, obj=None):
         return False

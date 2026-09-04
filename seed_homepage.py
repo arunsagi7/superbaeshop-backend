@@ -35,6 +35,7 @@ sections_data = {
     'dream_box_collections': {'title': 'Dream Box Collections', 'subtitle': 'Dream Box', 'description': 'Upgrade every day with connected devices delivering effortless performance.'},
     'testimonials': {'title': 'Testimonials', 'subtitle': 'What Our', 'description': 'Real reviews from real customers'},
     'upgrade_essentials': {'title': 'Upgrade Essentials', 'subtitle': 'Upgrade Your', 'description': 'Premium quality that makes every moment special'},
+    'bestseller': {'title': 'Bestseller', 'subtitle': 'Our Best', 'description': 'Our most loved products, handpicked by customers'},
 }
 
 sections = {}
@@ -293,6 +294,38 @@ for i, (title, category, prices, badge, rating, reviews) in enumerate(grid_produ
     product_index = (i % 7) + 1
     HomepageSectionProduct.objects.create(
         section=sections['product_grid'],
+        title=title,
+        image=f'/images/productcard/product-{product_index}.png',
+        price=prices['in'],
+        original_price=round(prices['in'] * 1.2, 2) if badge else None,
+        badge=badge,
+        rating=rating,
+        reviews_count=reviews,
+        link_text='Buy Now',
+        ordering=i,
+        is_active=True,
+        product=p
+    )
+    print(f"  - {title}")
+
+# ============ BESTSELLER (using productcard images) ============
+print("\n9. Bestseller")
+bestseller_products = [
+    ('Sticker Book Large', cat_stickers, {'in': 19.99, 'au': 29.99, 'sg': 26.99, 'ar': 24.99}, 'Bestseller', 4.9, 156),
+    ('Pink Blossom Notebook', cat_notebooks, {'in': 12.99, 'au': 18.99, 'sg': 16.99, 'ar': 15.99}, 'Popular', 4.8, 124),
+    ('Sky Blue Planner', cat_planners, {'in': 18.99, 'au': 27.99, 'sg': 24.99, 'ar': 22.99}, '', 4.7, 156),
+    ('Pastel Washi Set', cat_stickers, {'in': 8.99, 'au': 12.99, 'sg': 11.99, 'ar': 10.99}, 'Best Value', 4.7, 267),
+    ('Rose Gold Notebook', cat_notebooks, {'in': 15.99, 'au': 23.99, 'sg': 20.99, 'ar': 18.99}, '', 4.8, 178),
+    ('Mint Daisy Journal', cat_notebooks, {'in': 11.99, 'au': 17.99, 'sg': 15.99, 'ar': 14.99}, 'New', 4.6, 203),
+    ('Lavender Dots Diary', cat_notebooks, {'in': 14.99, 'au': 21.99, 'sg': 19.99, 'ar': 17.99}, '', 4.9, 89),
+    ('Spring Garden Diary', cat_notebooks, {'in': 13.99, 'au': 19.99, 'sg': 17.99, 'ar': 16.99}, '', 4.9, 92),
+]
+
+for i, (title, category, prices, badge, rating, reviews) in enumerate(bestseller_products):
+    p = create_product_with_country(title, category, {k: {'price': v} for k, v in prices.items()})
+    product_index = (i % 7) + 1
+    HomepageSectionProduct.objects.create(
+        section=sections['bestseller'],
         title=title,
         image=f'/images/productcard/product-{product_index}.png',
         price=prices['in'],
