@@ -139,12 +139,8 @@ class AffiliatesReferralAdmin(admin.ModelAdmin):
 # ============================================================
 # OTHERS APP - Additional registrations
 # ============================================================
-
-@admin.register(ShipmentLogin, site=my_admin_site)
-class ShipmentLoginAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "username", "is_active")
-    search_fields = ("name", "username")
-    list_filter = ("is_active",)
+# NOTE: ShipmentLogin (Shiprocket credentials) is registered in
+# others/admin.py with token-refresh support.
 
 
 # ============================================================

@@ -217,11 +217,67 @@ class HomepageSectionProductSerializer(serializers.ModelSerializer):
 
 class HomepageSectionSerializer(serializers.ModelSerializer):
     section_products = HomepageSectionProductSerializer(many=True)
+    background_image = serializers.SerializerMethodField()
+    profile_image = serializers.SerializerMethodField()
+    products_image = serializers.SerializerMethodField()
+    promotion_slides = serializers.SerializerMethodField()
 
     class Meta:
         model = models.HomepageSection
         fields = ("id", "section_type", "title", "subtitle", "description", "image",
-                  "background_color", "link_url", "link_text", "ordering", "is_active", "section_products")
+                  "background_image", "profile_image", "products_image",
+                  "background_color", "link_url", "link_text", "ordering", "is_active",
+                  "section_products", "promotion_slides")
+
+    def _absolute_image_url(self, obj, field_name):
+        field = getattr(obj, field_name)
+        if not field:
+            return None
+        try:
+            url = field.url
+        except Exception:
+            return None
+        request = self.context.get('request', None)
+        if request and not url.startswith('http'):
+            return request.build_absolute_uri(url)
+        return url
+
+    def get_background_image(self, obj):
+        return self._absolute_image_url(obj, 'background_image')
+
+    def get_profile_image(self, obj):
+        return self._absolute_image_url(obj, 'profile_image')
+
+    def get_products_image(self, obj):
+        return self._absolute_image_url(obj, 'products_image')
+
+    def get_promotion_slides(self, obj):
+        slides = obj.promotion_slides.filter(is_active=True).order_by('ordering')
+        request = self.context.get('request', None)
+
+        def abs_url(field):
+            if not field:
+                return None
+            try:
+                url = field.url
+            except Exception:
+                return None
+            if request and not url.startswith('http'):
+                return request.build_absolute_uri(url)
+            return url
+
+        return [{
+            "id": s.id,
+            "title": s.title,
+            "subtitle": s.subtitle,
+            "background_image": abs_url(s.background_image),
+            "profile_image": abs_url(s.profile_image),
+            "products_image": abs_url(s.products_image),
+            "link_url": s.link_url,
+            "link_text": s.link_text,
+            "ordering": s.ordering,
+            "is_active": s.is_active,
+        } for s in slides]
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

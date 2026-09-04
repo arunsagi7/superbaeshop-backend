@@ -245,10 +245,7 @@ class OrdersAdmin(admin.ModelAdmin, SendEmailViewMixin):
             'fields': (("tracking_client_id", "user"), ('name', "email", "dial_code", "phone"), "address_detail",
                        "status", "created_on")
         }),
-        ('Payment info', {
-            'fields': ("currency_type", "payment_type", "sub_total_amount", "coupon_amount", "shipping_charge",
-                       "cod_charge", "pay_amount", "payment_status", "is_wallet", "coupon_code", "total_gst")
-        })
+
 
     )
 
@@ -340,7 +337,7 @@ class OrdersAdmin(admin.ModelAdmin, SendEmailViewMixin):
         if self.model.__name__ == "Transaction":
             return ("order_info", "customer_info", "address_detail", "status", "payment_type",
                     "payment_status", "currency_type", "total_amount", "pay_amount", "coupon_amount", "shipping_charge",
-                    "transaction_id", "move_cod")
+                    "transaction_id", "move_cod", "pay_mode")
         if self.model.__name__ == "OrderPlaced":
             return ("order_info", "customer_info", "address_detail", "status", "payment_type",
                     "payment_status", "currency_type", "total_amount", "pay_amount", "coupon_amount", "shipping_charge",
