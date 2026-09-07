@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions, response, exceptions, mixins, parsers
+from rest_framework import viewsets, permissions, response, exceptions, mixins, parsers, status
 
 from space_and_beauty.pagination import RestFrameworkPaginationMixin
 from . import serializers, models
@@ -49,12 +49,13 @@ class UserProfileViewSet(viewsets.GenericViewSet):
 
 
 class UserAddressViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin,
-                         mixins.UpdateModelMixin, mixins.CreateModelMixin):
+                         mixins.UpdateModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin):
     """
     use this endpoint to do following operations
     1. Create a Address
     2. Update a user Address
     3. List all user Address
+    4. Delete a user Address
     """
 
     permission_classes = (
@@ -68,6 +69,22 @@ class UserAddressViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.
         if not hasattr(self.request.user, "userprofile"):
             raise exceptions.NotFound()
         return self.model.objects.filter(user=self.request.user.userprofile)
+
+    def destroy(self, request, *args, **kwargs):
+        # get_object() is scoped to the authenticated user's addresses via
+        # get_queryset(), so another user's address results in a 404.
+        address = self.get_object()
+
+        from orders_management.models import Orders
+        if Orders.objects.filter(address=address).exists():
+            return response.Response(
+                {"detail": "This address is linked to existing orders and cannot be deleted."},
+                status=status.HTTP_400_BAD_REQUEST)
+
+        address.delete()
+        return response.Response(
+            {"detail": "Address deleted successfully."},
+            status=status.HTTP_200_OK)
 
 
 class UserPointsHistoryViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
