@@ -651,3 +651,70 @@ input[type="submit"].default,
     outline: 2px solid var(--sab-primary);
     outline-offset: 2px;
 }
+/* ===== Promotion Slides inline (Promotions Banner section) ===== */
+/* Responsive + horizontal scroll with hidden scrollbar on the fieldset.module */
+#promotionslide_set-group fieldset.module {
+    overflow-x: scroll;
+    /* scroll-behavior: smooth; */
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+#promotionslide_set-group fieldset.module::-webkit-scrollbar {
+    display: none;
+}
+
+/* Table must be wider than the viewport to enable the scroll area */
+#promotionslide_set-group .tabular table {
+    min-width: 1150px;
+    width: max-content;
+}
+
+/* Larger, readable inputs inside the slides table */
+#promotionslide_set-group .tabular input[type='text'],
+#promotionslide_set-group .tabular input[type='number'],
+#promotionslide_set-group .tabular input[type='url'],
+#promotionslide_set-group .tabular select {
+    min-width: 170px;
+    min-height: 34px;
+    padding: 4px 8px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    color: #1e293b;
+}
+#promotionslide_set-group .tabular input[type='file'] {
+    min-width: 210px;
+    font-size: 13px;
+}
+#promotionslide_set-group .tabular input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+#promotionslide_set-group .tabular th,
+#promotionslide_set-group .tabular td {
+    padding: 10px 12px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+/* Mobile: full-width rows, comfortable touch targets */
+@media (max-width: 768px) {
+    #promotionslide_set-group fieldset.module {
+        padding: 0;
+    }
+    #promotionslide_set-group .tabular table {
+        min-width: 1000px;
+    }
+    #promotionslide_set-group .tabular input[type='text'],
+    #promotionslide_set-group .tabular input[type='number'],
+    #promotionslide_set-group .tabular input[type='url'],
+    #promotionslide_set-group .tabular select {
+        min-width: 150px;
+        font-size: 16px; /* prevents iOS zoom-on-focus */
+    }
+    #promotionslide_set-group .tabular input[type='file'] {
+        min-width: 180px;
+    }
+}
