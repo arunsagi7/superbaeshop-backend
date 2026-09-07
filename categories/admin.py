@@ -159,8 +159,33 @@ class HomepageSectionProductInline(admin.StackedInline):
     verbose_name_plural = "Section Products"
 
 
+class PromotionSlideForm(forms.ModelForm):
+    """
+    Fixes: "Please either submit a file or check the clear checkbox, not both."
+    If a new file is uploaded, silently ignore the clear checkbox.
+    """
+    IMAGE_FIELDS = ("background_image", "profile_image", "products_image")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Mutate the raw POST data before field cleaning happens:
+        # when a new file was uploaded for a field, drop its "-clear" checkbox.
+        data = self.data
+        if hasattr(data, "copy"):
+            mutated = None
+            for field in self.IMAGE_FIELDS:
+                clear_key = self.add_prefix(field + "-clear")
+                if self.files.get(self.add_prefix(field)) and clear_key in data:
+                    if mutated is None:
+                        mutated = data.copy()
+                    mutated.pop(clear_key)
+            if mutated is not None:
+                self.data = mutated
+
+
 class PromotionSlideInline(admin.TabularInline):
     model = models.PromotionSlide
+    form = PromotionSlideForm
     fields = ("title", "subtitle", "background_image", "profile_image",
               "products_image", "link_url", "link_text", "ordering", "is_active")
     extra = 1
