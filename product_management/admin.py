@@ -121,6 +121,7 @@ class ProductsAdmin(RelatedFieldAdmin):
         "stock_qty",
         "image_tag",
         "status_btn",
+        "delete_btn",
         "is_active",
         "ordering",
         "created_on",
@@ -166,6 +167,7 @@ class ProductsAdmin(RelatedFieldAdmin):
             path('publish/', self.publish_products),
             path('delete-all/', self.delete_all_products),
             path('update-status/<int:pk>/<int:status>/', self.update_status),
+            path('delete/<int:pk>/', self.delete_product, name='product_management_product_delete'),
         ]
         return my_urls + urls
 
@@ -260,6 +262,65 @@ class ProductsAdmin(RelatedFieldAdmin):
         order.status = status
         order.save()
         return redirect("../../../")
+
+    def delete_btn(self, obj):
+        return mark_safe(
+            """<a href="delete/{id}/" class="btn btn-sm" style="color:#ba2121;font-weight:bold;"
+                onclick="return deleteProduct(event, {id});"><i class="fas fa-trash"></i> Delete</a>""".format(
+                id=obj.id))
+    delete_btn.short_description = "Delete"
+
+    @staticmethod
+    def delete_product(request, pk):
+        """
+        Deletes a single product identified by its primary key.
+        - DELETE request (used by the admin panel via fetch) returns a JSON response.
+        - GET request (fallback, e.g. opening the link directly) deletes and redirects back to the list.
+        """
+        from django.http import JsonResponse
+
+        if not request.user.is_authenticated:
+            if request.method == "DELETE":
+                return JsonResponse(
+                    {"success": False, "message": "Authentication required."},
+                    status=401)
+            return redirect('/')
+
+        if request.method not in ("DELETE", "GET"):
+            return JsonResponse(
+                {"success": False, "message": "Method not allowed."},
+                status=405)
+
+        product = get_object_or_None(models.Products, pk=pk)
+        if not product:
+            if request.method == "DELETE":
+                return JsonResponse(
+                    {"success": False, "message": "Product not found."},
+                    status=404)
+            from django.contrib import messages
+            messages.error(request, "Product not found.")
+            return redirect('../../')
+
+        product_id = product.id
+        product_title = product.title
+        try:
+            product.delete()
+        except Exception as e:
+            if request.method == "DELETE":
+                return JsonResponse(
+                    {"success": False,
+                     "message": "Failed to delete product: {}".format(str(e))},
+                    status=400)
+            from django.contrib import messages
+            messages.error(request, "Failed to delete product: {}".format(str(e)))
+            return redirect('../../')
+
+        message = "Product '{}' (ID: {}) deleted successfully.".format(product_title, product_id)
+        if request.method == "DELETE":
+            return JsonResponse({"success": True, "message": message}, status=200)
+        from django.contrib import messages
+        messages.success(request, message)
+        return redirect('../../')
 
     @transaction.atomic()
     def pre_upload_product(self, request):
