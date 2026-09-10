@@ -257,12 +257,19 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
 MEDIA_URL = '/media/'
 
 # CORS SETUP
+# NOTE: installed django-cors-headers version is 3.2.1, which uses the older
+# setting names (CORS_ORIGIN_ALLOW_ALL / CORS_ORIGIN_WHITELIST).
+# The newer names (CORS_ALLOW_ALL_ORIGINS / CORS_ALLOWED_ORIGINS, added in
+# v3.5) are silently ignored by 3.2.1 and caused CORS errors from localhost:3000.
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ORIGIN_WHITELIST = (
-    'null',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
 )
 
-CORS_ORIGIN_REGEX_WHITELIST = r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$"
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = (
     'POST',
@@ -272,8 +279,6 @@ CORS_ALLOW_METHODS = (
     'DELETE',
     'OPTIONS',
 )
-
-CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_HEADERS = (
     'accept',
